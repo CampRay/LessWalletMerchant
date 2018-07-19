@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.braintreepayments.api:core-2.14.1">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/core-2.14.1.aar/f3768b2398216d5e58a3268c5cacb2e1/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/core-2.14.1.aar/f3768b2398216d5e58a3268c5cacb2e1/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.braintreepayments.api/core/2.14.1/752c9c04ff3a1306582a6fbdd850e50e7e78a415/core-2.14.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
