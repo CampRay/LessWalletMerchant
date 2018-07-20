@@ -3,7 +3,6 @@ package com.campray.lesswalletmerchant.ui;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import com.campray.lesswalletmerchant.R;
 import com.campray.lesswalletmerchant.adapter.HistoryAdapter;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerAdapter;
-import com.campray.lesswalletmerchant.adapter.base.IMutlipleItem;
 import com.campray.lesswalletmerchant.adapter.listener.OnRecyclerViewListener;
 import com.campray.lesswalletmerchant.db.entity.History;
 import com.campray.lesswalletmerchant.model.HistoryModel;
@@ -60,25 +58,7 @@ public class MessageActivity extends MenuActivity {
      * 显示消息列表
      */
     private void showMessageList(){
-        //布局对象
-        IMutlipleItem<History> mutlipleItem = new IMutlipleItem<History>() {
-            //根据对象所在位置参数和对象数据，设置对象的不同布局类型
-            @Override
-            public int getItemViewType(int postion, History history) {
-                return 0;
-            }
-            // 根据指定的View类型参数，返回对应的布局layout资源文件ID
-            @Override
-            public int getItemLayoutId(int viewtype) {
-                return R.layout.item_message;
-            }
-            //返回布局对象数量
-            @Override
-            public int getItemCount(List<History> list) {
-                return list.size();
-            }
-        };
-        adapter=new HistoryAdapter(this,mutlipleItem,null);
+        adapter=new HistoryAdapter(this,R.layout.item_message,null);
 
         rc_message_list.setAdapter(adapter);
         linearLayoutManager=new LinearLayoutManager(this);

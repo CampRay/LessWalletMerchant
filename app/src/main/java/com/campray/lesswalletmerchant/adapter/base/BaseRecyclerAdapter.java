@@ -25,30 +25,26 @@ import java.util.List;
  * @author Phills
  */
 public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerHolder> {
-    /**
-     * 不使用IMutlipleItem方式的默认布局
-     */
-    private final int TYPE_DEFAULT = 0;
-    /**
-     * 当list没有值得时候显示的布局
-     */
-    private final int TYPE_EMPTY = 1;
-    /**
-     * 多重布局
-     */
-    private final int TYPE_MUTIPLE = 2;
-    /**
-     * 带header的多重布局(头部和列表中其它对象不一样)
-     */
-    private final int TYPE_MUTIPLE_HEADER = 3;
-    //底部布局
-    private final int TYPE_FOOTER = 4;
+    //viewType:列表第一个元素,并且不为Null值
+    public static final int TYPE_FIRST = 0;
+    //viewType:列表第一个元素,并且为Null值
+    public static final int TYPE_FIRST_NULL = 1;
+    //viewType:列表有多个元素，并且不是第一个或最后一个元素,并且不为Null值
+    public static final int TYPE_ITEM = 2;
+    //viewType:列表有多个元素，并且不是第一个或最后一个元素,并且为Null值
+    public static final int TYPE_ITEM_NULL = 3;
+    //viewType:列表有多个元素，并且最后一个元素为null值
+    public static final int TYPE_LAST_NULL = 4;
+    //viewType:列表有多个元素,并且最后一个元素不为Null值
+    public static final int TYPE_LAST = 5;
+    //viewType:列表没有任何元素
+    public static final int TYPE_EMPTY = 6;
 
     protected final Context context;
     //列表对象对应要显示的数据列表
     protected List<T> lists;
-    //列表中有多种不同的显示布局时，需实例化此类方法以设置布局资源
-    protected IMutlipleItem<T> items;
+    //当前列表对象布局资源ID
+    protected int layoutId;
     protected OnRecyclerViewListener listener;
     protected BaseRecyclerHolder viewHolder;//视图对象处理器
 
@@ -56,12 +52,12 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      * 支持一种或多种Item布局
      *
      * @param context
-     * @param items 列表中有多种不同的显示布局时，需在外部实例化此类方法并传入此Aapter中,否则传null
+     * @param layoutResourceId 默认的列表对象布局资源ID
      * @param datas 列表中对应要显示的数据对象集合
      */
-    public BaseRecyclerAdapter(Context context, IMutlipleItem<T> items, Collection<T> datas) {
+    public BaseRecyclerAdapter(Context context, int layoutResourceId, Collection<T> datas) {
         this.context = context;
-        this.items = items;
+        this.layoutId = layoutResourceId;
         this.lists = datas == null ? new ArrayList<T>() : new ArrayList<T>(datas);
     }
 
@@ -122,16 +118,29 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     @Override
     public int getItemViewType(int position) {
-        int type = getViewTypeByPosition(position);
-        if(type==TYPE_EMPTY){
-            return items.getItemViewType(position, null);
-        }else if(type==TYPE_MUTIPLE){
-            return items.getItemViewType(position, lists.get(position));
-        }else if(type==TYPE_MUTIPLE_HEADER){
-            int headerCount = getItemCount() - lists.size();
-            return items.getItemViewType(position, lists.get(position - headerCount));
-        }else{
-            return 0;
+        if(getCount()==0){
+            return TYPE_EMPTY;
+        }
+        else {
+            if (position == 0) {
+                if (getItem(position) == null) {
+                    return TYPE_FIRST_NULL;
+                } else {
+                    return TYPE_FIRST;
+                }
+            }else if((getCount()-1)==position) {
+                if (getItem(position) == null) {
+                    return TYPE_LAST_NULL;
+                } else {
+                    return TYPE_LAST;
+                }
+            }else {
+                if (getItem(position) == null) {
+                    return TYPE_ITEM_NULL;
+                } else {
+                    return TYPE_ITEM;
+                }
+            }
         }
     }
 
@@ -143,8 +152,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     @Override
     public BaseRecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //根据不同的View类型打开不同的View布局
-        int layoutId = items.getItemLayoutId(viewType);
         LayoutInflater inflater = LayoutInflater.from(context);
         View root = inflater.inflate(layoutId, parent, false);
         viewHolder=new BaseRecyclerHolder(layoutId, root);
@@ -158,17 +165,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     @Override
     public void onBindViewHolder(BaseRecyclerHolder holder, int position) {
-        int type = getViewTypeByPosition(position);
-        if(type==TYPE_EMPTY){
-            bindView(holder, null, position);
-        }else if(type==TYPE_MUTIPLE){
-            bindView(holder, lists.get(position), position);
-        }else if(type==TYPE_MUTIPLE_HEADER){
-            int headerCount = getItemCount() - lists.size();
-            bindView(holder, lists.get(position - headerCount), position);
-        }else{
-            bindView(holder, null, position);
-        }
+        bindView(holder, getItem(position), position);
         //为当前要绑定的对象设置监听器
         holder.itemView.setOnClickListener(getOnClickListener(position));
         holder.itemView.setOnLongClickListener(getOnLongClickListener(position));
@@ -180,38 +177,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     @Override
     public int getItemCount() {
-        if (items != null) {//当有多重布局的时候，则采用多重布局
-            return items.getItemCount(lists);
-        }
         return lists.size();
-    }
-
-
-    /**获取指定位置对象的position的布局类型
-     * @param position
-     */
-    private int getViewTypeByPosition(int position) {
-        if (items == null) {//默认布局
-            return TYPE_DEFAULT;
-        } else {//多布局
-            if (lists != null && lists.size() > 0) {//list有值的时候
-                //是否有自定义的Header,如果从重写的IMutlipleItem对象的getItemCount()方法获取的列表对象数量，
-                //大于实际列表要显示的对象数量，则表示有自定义的头布局
-                if (getItemCount() > lists.size()) {
-                    //获取多出的头部布局对象数量
-                    int headerCount = getItemCount() - lists.size();
-                    if (position <= headerCount) {
-                        return TYPE_MUTIPLE_HEADER;//当前显示的是header
-                    } else {
-                        return TYPE_MUTIPLE;
-                    }
-                } else {
-                    return TYPE_MUTIPLE;
-                }
-            } else {//list还没有值的时候,显示的布局
-                return TYPE_EMPTY;
-            }
-        }
     }
 
     /**
@@ -227,8 +193,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      * @param position
      */
     public void remove(int position) {
-        int more = getItemCount() - lists.size();
-        lists.remove(position - more);
+        lists.remove(position);
         notifyDataSetChanged();
     }
 
@@ -238,8 +203,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      * @return
      */
     public T getItem(int position) {
-        int more = getItemCount() - lists.size();
-        return lists.get(position - more);
+        return lists.get(position);
     }
 
     /**

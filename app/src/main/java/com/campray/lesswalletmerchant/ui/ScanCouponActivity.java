@@ -106,6 +106,10 @@ public class ScanCouponActivity extends MenuActivity {
     private boolean isAdd=false;
     private int key=0;
 
+    private String serviceTime;
+    private String cashAmount;
+    private String buyTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,6 +215,9 @@ public class ScanCouponActivity extends MenuActivity {
                     }
                 }
 
+                cashAmount=curCoupon.getCustomValues().get("2");
+                serviceTime=curCoupon.getCustomValues().get("3");
+                buyTime=curCoupon.getCustomValues().get("4");
                 UserModel.getInstance().searchUserById(coupon.getUserId(), new OperationListener<User>() {
                     @Override
                     public void done(User obj, AppException exception) {
@@ -242,9 +249,9 @@ public class ScanCouponActivity extends MenuActivity {
                         intent.setClass(ScanCouponActivity.this, CouponUseActivity.class);
                         intent.putExtra("id",curCoupon.getProductId());
                         intent.putExtra("expired",expired);
-                        intent.putExtra("cash", curCoupon.getCustomValues().get("2"));
-                        intent.putExtra("service",curCoupon.getCustomValues().get("3"));
-                        intent.putExtra("buy",curCoupon.getCustomValues().get("4"));
+                        intent.putExtra("cash", cashAmount);
+                        intent.putExtra("service",serviceTime);
+                        intent.putExtra("buy",buyTime);
                         startActivity(intent);
                     }
                 });
@@ -332,7 +339,8 @@ public class ScanCouponActivity extends MenuActivity {
                         else{
                             CouponStyle  couponStyle= curCoupon.getCouponStyle();
                             if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+(Float.parseFloat(curCoupon.getCustomValues().get("2"))+amount));
+                                cashAmount=(Float.parseFloat(cashAmount)+amount)+"";
+                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+cashAmount);
                                 if(isAdd) {
                                     toast(getResources().getString(R.string.text_coupon_add_cash_success));
                                 }
@@ -340,7 +348,8 @@ public class ScanCouponActivity extends MenuActivity {
                                     toast(getResources().getString(R.string.text_coupon_deduct_cash_success));
                                 }
                             } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+(Integer.parseInt(curCoupon.getCustomValues().get("3"))+amount));
+                                serviceTime=(Integer.parseInt(serviceTime)+amount)+"";
+                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+serviceTime);
                                 if(isAdd) {
                                     toast(getResources().getString(R.string.text_coupon_add_service_success));
                                 }
@@ -348,7 +357,8 @@ public class ScanCouponActivity extends MenuActivity {
                                     toast(getResources().getString(R.string.text_coupon_deduct_service_success));
                                 }
                             } else if (!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                                tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+(Integer.parseInt(curCoupon.getCustomValues().get("4"))+amount));
+                                buyTime=(Integer.parseInt(buyTime)+amount)+"";
+                                tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+buyTime);
                                 if(isAdd) {
                                     toast(getResources().getString(R.string.text_coupon_add_buy_success));
                                 }

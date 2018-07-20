@@ -47,7 +47,6 @@
     <string name="error_format_amount">The collection amount must be float number with two decimals.</string>
     <string name="error_field_required">This field is required</string>
 
-
     <string name="dialog_camera_permission">This App need the camera permission to scan QRCode</string>
     <string name="dialog_camera_permission_setting">This App need the camera permission, do you want to open the system setting page?</string>
     <string name="dialog_permission_title">Request Permission</string>
@@ -74,6 +73,7 @@
     <string name="friend_select_hint">Please select your friend</string>
     <string name="coupon_sent_to">SENT TO:</string>
     <string name="coupon_sent_success">Send successfully.</string>
+    <string name="coupon_publish_merchant">Publish Merchant:</string>
     <string name="coupon_publish_date">Publish Date:</string>
     <string name="coupon_publish_price">Publish Price:</string>
     <string name="coupon_benefit">Benefit:</string>
@@ -137,6 +137,30 @@
     <string name="notification_coupon_sent">Sent out a coupon</string>
     <string name="notification_coupon_sent_text">Gave a coupon to your friend</string>
 
+    <string name="notification_user_coupon_received">Received a coupon</string>
+    <string name="notification_user_coupon_received_text">You have received a coupon from the merchant</string>
+    <string name="notification_user_card_received">Received a membership card</string>
+    <string name="notification_user_card_received_text">You have received a membership card from merchant</string>
+    <string name="notification_user_point_add">Your points have been increased</string>
+    <string name="notification_user_point_add_text">%s membership points are added to your account by merchant</string>
+    <string name="notification_user_point_redeemed">Your points have been deducted</string>
+    <string name="notification_user_point_redeemed_text">%s membership points are deducted from your account by merchant</string>
+    <string name="notification_user_service_add">Service time have been increased</string>
+    <string name="notification_user_service_add_text">%s time of service are added to your coupon by merchant</string>
+    <string name="notification_user_service_redeemed">Service time have been deducted</string>
+    <string name="notification_user_service_redeemed_text">%s time of service are deducted from your coupon by merchant</string>
+    <string name="notification_user_coupon_used">Coupon has been used</string>
+    <string name="notification_user_coupon_used_text">You one-time coupon has been used</string>
+    <string name="notification_user_buy_redeemed">Coupon purchase time have been deducted</string>
+    <string name="notification_user_buy_redeemed_text">%s time of purchase are deducted from your coupon by merchant</string>
+    <string name="notification_user_buy_added">Coupon purchase time have been increased</string>
+    <string name="notification_user_buy_added_text">%s time of purchase are added to your coupon by merchant</string>
+
+    <string name="notification_user_cash_add">Coupon amount have been increased</string>
+    <string name="notification_user_cash_add_text">%s prepaid cash are added to your coupon by merchant</string>
+    <string name="notification_user_cash_redeemed">Coupon amount have been deducted</string>
+    <string name="notification_user_cash_redeemed_text">%s prepaid cash are deducted from your coupon by merchant</string>
+
     <string name="notification_merchant_coupon_sent">Sent out a coupon successfully</string>
     <string name="notification_merchant_coupon_sent_text">Gave a coupon to user</string>
     <string name="notification_merchant_card_sent">Sent out a card successfully</string>
@@ -150,15 +174,15 @@
     <string name="notification_merchant_point_added">Added points successfully</string>
     <string name="notification_merchant_point_added_text">Added %s points from user</string>
 
-    <string name="notification_merchant_cash_redeemed">Redeemed cash successfully</string>
-    <string name="notification_merchant_cash_redeemed_text">Redeemed %s cash from user coupon</string>
+    <string name="notification_merchant_cash_redeemed">Deducted cash successfully</string>
+    <string name="notification_merchant_cash_redeemed_text">Deducted %s prepaid cash from user coupon</string>
     <string name="notification_merchant_cash_added">Added cash successfully</string>
-    <string name="notification_merchant_cash_added_text">Added %s cash from user coupon</string>
+    <string name="notification_merchant_cash_added_text">Added %s prepaid cash to user coupon successfully</string>
 
-    <string name="notification_merchant_service_redeemed">Redeemed cash successfully</string>
-    <string name="notification_merchant_service_redeemed_text">Redeemed %s cash from user</string>
-    <string name="notification_merchant_service_added">Added cash successfully</string>
-    <string name="notification_merchant_service_added_text">Added %s cash from user</string>
+    <string name="notification_merchant_service_redeemed">Deducted service time successfully</string>
+    <string name="notification_merchant_service_redeemed_text">Deducted %s service time from user coupon</string>
+    <string name="notification_merchant_service_added">Added service time successfully</string>
+    <string name="notification_merchant_service_added_text">Added %s service time to user coupon successfully</string>
 
     <string name="notification_merchant_buy_deduct">Deducted purchase time successfully</string>
     <string name="notification_merchant_buy_deducted_text">Deducted %s purchase time from user coupon successfully</string>

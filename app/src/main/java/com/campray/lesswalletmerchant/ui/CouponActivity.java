@@ -9,7 +9,6 @@ import com.campray.lesswalletmerchant.LessWalletApplication;
 import com.campray.lesswalletmerchant.R;
 import com.campray.lesswalletmerchant.adapter.ProductAdapter;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerAdapter;
-import com.campray.lesswalletmerchant.adapter.base.IMutlipleItem;
 import com.campray.lesswalletmerchant.adapter.listener.OnRecyclerViewListener;
 import com.campray.lesswalletmerchant.db.entity.Product;
 import com.campray.lesswalletmerchant.db.entity.User;
@@ -62,23 +61,8 @@ public class CouponActivity extends MenuActivity {
      * 根据电子卷的类型适配显示不同的电子卷列表
      */
     private void showCouponList(final int typeId){
-        //布局对象
-        IMutlipleItem<Product> mutlipleItem = new IMutlipleItem<Product>() {
-            //根据对象所在位置参数和对象数据，设置对象的不同布局类型
-            @Override
-            public int getItemViewType(int postion, Product product) { return 0;}
-            // 根据指定的View类型参数，返回对应的布局layout资源文件ID
-            @Override
-            public int getItemLayoutId(int viewtype) {
-                return typeId==1?R.layout.item_coupon:R.layout.item_card;
-            }
-            //返回布局对象数量
-            @Override
-            public int getItemCount(List<Product> list) {
-                return list.size();
-            }
-        };
-        adapter = new ProductAdapter(this, mutlipleItem, null);
+        int resId=typeId==1?R.layout.item_coupon:R.layout.item_card;
+        adapter = new ProductAdapter(this, resId, null);
         rc_coupon_list.setAdapter(adapter);
         linearLayoutManager=new LinearLayoutManager(this);
         rc_coupon_list.setLayoutManager(linearLayoutManager);

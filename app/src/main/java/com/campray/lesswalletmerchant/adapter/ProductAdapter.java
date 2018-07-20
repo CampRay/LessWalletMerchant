@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import com.campray.lesswalletmerchant.R;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerAdapter;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerHolder;
-import com.campray.lesswalletmerchant.adapter.base.IMutlipleItem;
 import com.campray.lesswalletmerchant.db.entity.CouponStyle;
 import com.campray.lesswalletmerchant.db.entity.Product;
 import com.campray.lesswalletmerchant.ui.ProductDetailActivity;
@@ -29,8 +28,8 @@ import java.util.Collection;
 public class ProductAdapter extends BaseRecyclerAdapter<Product> {
     private final static int SCANNIN_USER_CODE = 113;//赠送卡卷时扫描用户二维码
 
-    public ProductAdapter(Context context, IMutlipleItem<Product> items, Collection<Product> datas) {
-        super(context,items,datas);
+    public ProductAdapter(Context context, int layoutResourceId, Collection<Product> datas) {
+        super(context,layoutResourceId,datas);
     }
 
     /**

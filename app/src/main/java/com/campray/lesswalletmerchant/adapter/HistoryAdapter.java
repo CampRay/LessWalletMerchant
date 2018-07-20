@@ -8,7 +8,6 @@ import com.campray.lesswalletmerchant.LessWalletApplication;
 import com.campray.lesswalletmerchant.R;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerAdapter;
 import com.campray.lesswalletmerchant.adapter.base.BaseRecyclerHolder;
-import com.campray.lesswalletmerchant.adapter.base.IMutlipleItem;
 import com.campray.lesswalletmerchant.db.entity.History;
 import com.campray.lesswalletmerchant.db.entity.User;
 import com.campray.lesswalletmerchant.model.HistoryModel;
@@ -23,8 +22,8 @@ import java.util.Collection;
  * @author Phills
  */
 public class HistoryAdapter extends BaseRecyclerAdapter<History> {
-    public HistoryAdapter(Context context, IMutlipleItem<History> items, Collection<History> datas) {
-        super(context,items,datas);
+    public HistoryAdapter(Context context, int layoutResourceId, Collection<History> datas) {
+        super(context,layoutResourceId,datas);
     }
 
     /**
