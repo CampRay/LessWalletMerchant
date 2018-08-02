@@ -48,7 +48,8 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property AvatarUrl = new Property(14, String.class, "avatarUrl", false, "AVATAR_URL");
         public final static Property AvatorPath = new Property(15, String.class, "avatorPath", false, "AVATOR_PATH");
         public final static Property Points = new Property(16, int.class, "points", false, "POINTS");
-        public final static Property VenderId = new Property(17, long.class, "venderId", false, "VENDER_ID");
+        public final static Property Cash = new Property(17, int.class, "cash", false, "CASH");
+        public final static Property VenderId = new Property(18, long.class, "venderId", false, "VENDER_ID");
     }
 
     private DaoSession daoSession;
@@ -84,7 +85,8 @@ public class UserDao extends AbstractDao<User, Long> {
                 "\"AVATAR_URL\" TEXT," + // 14: avatarUrl
                 "\"AVATOR_PATH\" TEXT," + // 15: avatorPath
                 "\"POINTS\" INTEGER NOT NULL ," + // 16: points
-                "\"VENDER_ID\" INTEGER NOT NULL );"); // 17: venderId
+                "\"CASH\" INTEGER NOT NULL ," + // 17: cash
+                "\"VENDER_ID\" INTEGER NOT NULL );"); // 18: venderId
     }
 
     /** Drops the underlying database table. */
@@ -161,7 +163,8 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindString(16, avatorPath);
         }
         stmt.bindLong(17, entity.getPoints());
-        stmt.bindLong(18, entity.getVenderId());
+        stmt.bindLong(18, entity.getCash());
+        stmt.bindLong(19, entity.getVenderId());
     }
 
     @Override
@@ -232,7 +235,8 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindString(16, avatorPath);
         }
         stmt.bindLong(17, entity.getPoints());
-        stmt.bindLong(18, entity.getVenderId());
+        stmt.bindLong(18, entity.getCash());
+        stmt.bindLong(19, entity.getVenderId());
     }
 
     @Override
@@ -266,7 +270,8 @@ public class UserDao extends AbstractDao<User, Long> {
             cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // avatarUrl
             cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // avatorPath
             cursor.getInt(offset + 16), // points
-            cursor.getLong(offset + 17) // venderId
+            cursor.getInt(offset + 17), // cash
+            cursor.getLong(offset + 18) // venderId
         );
         return entity;
     }
@@ -290,7 +295,8 @@ public class UserDao extends AbstractDao<User, Long> {
         entity.setAvatarUrl(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
         entity.setAvatorPath(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
         entity.setPoints(cursor.getInt(offset + 16));
-        entity.setVenderId(cursor.getLong(offset + 17));
+        entity.setCash(cursor.getInt(offset + 17));
+        entity.setVenderId(cursor.getLong(offset + 18));
      }
     
     @Override

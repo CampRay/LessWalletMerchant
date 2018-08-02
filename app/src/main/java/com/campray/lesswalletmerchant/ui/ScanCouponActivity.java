@@ -1,9 +1,11 @@
 package com.campray.lesswalletmerchant.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -33,6 +35,7 @@ import com.campray.lesswalletmerchant.view.RoundImageView;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,6 +68,8 @@ public class ScanCouponActivity extends MenuActivity {
     TextView tv_number;
     @BindView(R.id.ll_desc)
     LinearLayout ll_desc;
+    @BindView(R.id.ll_benefit)
+    LinearLayout ll_benefit;
     @BindView(R.id.tv_benefit)
     TextView tv_benefit;
     @BindView(R.id.tv_benefit_value)
@@ -88,27 +93,15 @@ public class ScanCouponActivity extends MenuActivity {
     @BindView(R.id.tv_phone)
     TextView tv_phone;
 
-    @BindView(R.id.tv_add)
-    TextView tv_add;
-    @BindView(R.id.tv_reduce)
-    TextView tv_reduce;
     @BindView(R.id.et_points)
     EditText et_points;
     @BindView(R.id.btn_confirm)
     Button btn_confirm;
 
-
-
     @BindView(R.id.rl_dialog)
     RelativeLayout rl_dialog;
 
     private Coupon curCoupon=null;
-    private boolean isAdd=false;
-    private int key=0;
-
-    private String serviceTime;
-    private String cashAmount;
-    private String buyTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,30 +170,21 @@ public class ScanCouponActivity extends MenuActivity {
                     //加载自定义图片
                     Picasso.with(this).load(couponStyle.getPictureUrl()).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).into(iv_coupon_img);
 
-                    if (!TextUtils.isEmpty(couponStyle.getBenefitOne())) {
-                        key=1;
-                        tv_benefit.setText(R.string.coupon_benefit_onetime);
-                        tv_benefit_value.setText(couponStyle.getBenefitOne());
-                        tv_add.setText(getResources().getString(R.string.coupon_one_redeemed));
-                        tv_reduce.setVisibility(View.GONE);
-                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                        key=2;
-                        tv_benefit.setText(R.string.coupon_benefit_precash);
-                        tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+coupon.getCustomValues().get("2"));
-                        tv_add.setText(getResources().getString(R.string.coupon_cash_add));
-                        tv_reduce.setText(getResources().getString(R.string.coupon_cash_deduct));
-                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                        key=3;
-                        tv_benefit.setText(R.string.coupon_benefit_preservice);
-                        tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+coupon.getCustomValues().get("3"));
-                        tv_add.setText(getResources().getString(R.string.coupon_service_add));
-                        tv_reduce.setText(getResources().getString(R.string.coupon_service_deduct));
-                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                        key=4;
-                        tv_benefit.setText(R.string.coupon_benefit_buyngetone);
-                        tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+coupon.getCustomValues().get("4"));
-                        tv_add.setText(getResources().getString(R.string.coupon_buy_add));
-                        tv_reduce.setText(getResources().getString(R.string.coupon_buy_deduct));
+                    if (!TextUtils.isEmpty(couponStyle.getBenefitFree())) {
+                        tv_benefit.setText( R.string.coupon_benefit_free);
+                        tv_benefit_value.setText(couponStyle.getBenefitFree());
+                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitCash())) {
+                        tv_benefit.setText( R.string.coupon_benefit_precash);
+                        tv_benefit_value.setText( couponStyle.getBenefitCash());
+                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitDiscount())) {
+                        tv_benefit.setText(R.string.coupon_benefit_discount);
+                        tv_benefit_value.setText(couponStyle.getBenefitDiscount());
+                    } else if (!TextUtils.isEmpty(couponStyle.getBenefitCustomized())) {
+                        tv_benefit.setText( R.string.coupon_benefit_customized);
+                        tv_benefit_value.setText(couponStyle.getBenefitCustomized());
+                    }
+                    else{
+                        ll_benefit.setVisibility(View.GONE);
                     }
 
                     if(couponStyle.getValidityDay()>0) {
@@ -215,9 +199,6 @@ public class ScanCouponActivity extends MenuActivity {
                     }
                 }
 
-                cashAmount=curCoupon.getCustomValues().get("2");
-                serviceTime=curCoupon.getCustomValues().get("3");
-                buyTime=curCoupon.getCustomValues().get("4");
                 UserModel.getInstance().searchUserById(coupon.getUserId(), new OperationListener<User>() {
                     @Override
                     public void done(User obj, AppException exception) {
@@ -249,9 +230,6 @@ public class ScanCouponActivity extends MenuActivity {
                         intent.setClass(ScanCouponActivity.this, CouponUseActivity.class);
                         intent.putExtra("id",curCoupon.getProductId());
                         intent.putExtra("expired",expired);
-                        intent.putExtra("cash", cashAmount);
-                        intent.putExtra("service",serviceTime);
-                        intent.putExtra("buy",buyTime);
                         startActivity(intent);
                     }
                 });
@@ -265,20 +243,23 @@ public class ScanCouponActivity extends MenuActivity {
     }
 
     /**
-     * 点击添加积分按钮
+     * 点击使用回收按钮
      */
-    @OnClick(R.id.tv_add)
-    public void onClickButtonAdd(){
-        isAdd = true;
-        CouponStyle  couponStyle= curCoupon.getCouponStyle();
-        if(couponStyle!=null) {
-            if (!TextUtils.isEmpty(couponStyle.getBenefitOne())) {
+    @OnClick(R.id.tv_redeem)
+    public void onClickButtonRedeem(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        builder.setTitle("提示");
+        builder.setMessage("确定要使用这张优惠卷吗？成功使用后，此优惠卷将被作废移除！");
+        builder.setCancelable(true);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 CouponModel.getInstance().delCouponsFromServer(curCoupon.getOrderId().toString(), new OperationListener<Coupon>() {
                     @Override
                     public void done(Coupon obj, AppException exception) {
                         if(exception!=null){
                             toast(getResources().getString(R.string.text_operate_failed)+getResources().getString(ResourcesUtils.getStringId(ScanCouponActivity.this,exception.getErrorCode())) );
-                            rl_dialog.setVisibility(View.GONE);
                         }
                         else{
                             toast(getResources().getString(R.string.text_coupon_redeemed_success));
@@ -286,106 +267,16 @@ public class ScanCouponActivity extends MenuActivity {
                         }
                     }
                 });
-            } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                et_points.setHint(R.string.text_cash_amount_add);
-                rl_dialog.setVisibility(View.VISIBLE);
-            } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                et_points.setHint(R.string.text_service_time_add);
-                rl_dialog.setVisibility(View.VISIBLE);
-            } else if (!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                et_points.setHint(R.string.text_buy_time_add);
-                rl_dialog.setVisibility(View.VISIBLE);
             }
-        }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-    }
-
-    /**
-     * 点击扣减积分按钮
-     */
-    @OnClick(R.id.tv_reduce)
-    public void onClickButtonDeduct(){
-        isAdd=false;
-        et_points.setText("");
-        CouponStyle  couponStyle= curCoupon.getCouponStyle();
-        if(couponStyle!=null) {
-            if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                et_points.setHint(R.string.text_cash_amount_deduct);
-            } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                et_points.setText("1");
-                et_points.setHint(R.string.text_service_time_deduct);
-            } else if (!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                et_points.setText("1");
-                et_points.setHint(R.string.text_buy_time_deduct);
             }
-            rl_dialog.setVisibility(View.VISIBLE);
-        }
+        });
+        builder.create().show();
 
-    }
-
-    @OnClick(R.id.btn_confirm)
-    public void onClickButtonOk(){
-        //修改用户权益
-        if(!TextUtils.isEmpty(et_points.getText().toString())) {
-            int value=Integer.parseInt(et_points.getText().toString());
-            if(value>0) {
-                final int amount=isAdd?value:-value;
-                CouponModel.getInstance().changeCouponsBenefit(curCoupon.getOrderId(),key+"",amount+"", new OperationListener<Coupon>() {
-                    @Override
-                    public void done(Coupon obj, AppException exception) {
-                        if (exception!= null) {
-                            toast(getResources().getString(R.string.text_operate_failed) + getResources().getString(ResourcesUtils.getStringId(getApplicationContext(), exception.getErrorCode())));
-                        }
-                        else{
-                            CouponStyle  couponStyle= curCoupon.getCouponStyle();
-                            if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                                cashAmount=(Float.parseFloat(cashAmount)+amount)+"";
-                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+cashAmount);
-                                if(isAdd) {
-                                    toast(getResources().getString(R.string.text_coupon_add_cash_success));
-                                }
-                                else{
-                                    toast(getResources().getString(R.string.text_coupon_deduct_cash_success));
-                                }
-                            } else if (!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                                serviceTime=(Integer.parseInt(serviceTime)+amount)+"";
-                                tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+serviceTime);
-                                if(isAdd) {
-                                    toast(getResources().getString(R.string.text_coupon_add_service_success));
-                                }
-                                else{
-                                    toast(getResources().getString(R.string.text_coupon_deduct_service_success));
-                                }
-                            } else if (!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                                buyTime=(Integer.parseInt(buyTime)+amount)+"";
-                                tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+buyTime);
-                                if(isAdd) {
-                                    toast(getResources().getString(R.string.text_coupon_add_buy_success));
-                                }
-                                else{
-                                    toast(getResources().getString(R.string.text_coupon_deduct_buy_success));
-                                }
-                            }
-
-                        }
-                        rl_dialog.setVisibility(View.GONE);
-                    }
-                });
-            }
-            else{
-                toast("请输入大于0的整数!");
-                return;
-            }
-        }
-    }
-
-    /**
-     * 点击空白区域取消对话框
-     */
-    @OnClick(R.id.rl_dialog)
-    public void onCloseDialog(){
-        rl_dialog.setVisibility(View.GONE);
-        btn_confirm.setText(R.string.button_ok);
     }
 
 }

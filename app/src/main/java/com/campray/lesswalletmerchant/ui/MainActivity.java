@@ -143,7 +143,7 @@ public class MainActivity extends MenuActivity {
             @Override
             public boolean onItemLongClick(final int position) {
                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("删除消息")//设置对话框的标题
+                        .setTitle("提示")//设置对话框的标题
                         .setMessage("确定要删除此消息吗？")//设置对话框的内容
                         //设置对话框的按钮
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {

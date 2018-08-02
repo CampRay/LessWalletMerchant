@@ -1,20 +1,13 @@
 package com.campray.lesswalletmerchant.db.dao;
 
-import java.util.List;
-import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
-
-import com.campray.lesswalletmerchant.db.converter.BenefitAttrConverter;
-import com.campray.lesswalletmerchant.db.entity.Product;
-import java.util.HashMap;
 
 import com.campray.lesswalletmerchant.db.entity.Coupon;
 
@@ -40,12 +33,8 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
         public final static Property StartTime = new Property(6, String.class, "startTime", false, "START_TIME");
         public final static Property EndTime = new Property(7, String.class, "endTime", false, "END_TIME");
         public final static Property Deleted = new Property(8, boolean.class, "deleted", false, "DELETED");
-        public final static Property CustomValues = new Property(9, String.class, "customValues", false, "CUSTOM_VALUES");
     }
 
-    private DaoSession daoSession;
-
-    private final BenefitAttrConverter customValuesConverter = new BenefitAttrConverter();
 
     public CouponDao(DaoConfig config) {
         super(config);
@@ -53,7 +42,6 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
     
     public CouponDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -68,8 +56,7 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
                 "\"PAYMENT_STATUS\" INTEGER NOT NULL ," + // 5: paymentStatus
                 "\"START_TIME\" TEXT NOT NULL ," + // 6: startTime
                 "\"END_TIME\" TEXT," + // 7: endTime
-                "\"DELETED\" INTEGER NOT NULL ," + // 8: deleted
-                "\"CUSTOM_VALUES\" TEXT);"); // 9: customValues
+                "\"DELETED\" INTEGER NOT NULL );"); // 8: deleted
     }
 
     /** Drops the underlying database table. */
@@ -106,11 +93,6 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
             stmt.bindString(8, endTime);
         }
         stmt.bindLong(9, entity.getDeleted() ? 1L: 0L);
- 
-        HashMap customValues = entity.getCustomValues();
-        if (customValues != null) {
-            stmt.bindString(10, customValuesConverter.convertToDatabaseValue(customValues));
-        }
     }
 
     @Override
@@ -141,17 +123,6 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
             stmt.bindString(8, endTime);
         }
         stmt.bindLong(9, entity.getDeleted() ? 1L: 0L);
- 
-        HashMap customValues = entity.getCustomValues();
-        if (customValues != null) {
-            stmt.bindString(10, customValuesConverter.convertToDatabaseValue(customValues));
-        }
-    }
-
-    @Override
-    protected final void attachEntity(Coupon entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
     }
 
     @Override
@@ -170,8 +141,7 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
             cursor.getInt(offset + 5), // paymentStatus
             cursor.getString(offset + 6), // startTime
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // endTime
-            cursor.getShort(offset + 8) != 0, // deleted
-            cursor.isNull(offset + 9) ? null : customValuesConverter.convertToEntityProperty(cursor.getString(offset + 9)) // customValues
+            cursor.getShort(offset + 8) != 0 // deleted
         );
         return entity;
     }
@@ -187,7 +157,6 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
         entity.setStartTime(cursor.getString(offset + 6));
         entity.setEndTime(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setDeleted(cursor.getShort(offset + 8) != 0);
-        entity.setCustomValues(cursor.isNull(offset + 9) ? null : customValuesConverter.convertToEntityProperty(cursor.getString(offset + 9)));
      }
     
     @Override
@@ -215,95 +184,4 @@ public class CouponDao extends AbstractDao<Coupon, Long> {
         return true;
     }
     
-    private String selectDeep;
-
-    protected String getSelectDeep() {
-        if (selectDeep == null) {
-            StringBuilder builder = new StringBuilder("SELECT ");
-            SqlUtils.appendColumns(builder, "T", getAllColumns());
-            builder.append(',');
-            SqlUtils.appendColumns(builder, "T0", daoSession.getProductDao().getAllColumns());
-            builder.append(" FROM COUPON T");
-            builder.append(" LEFT JOIN PRODUCT T0 ON T.\"PRODUCT_ID\"=T0.\"_id\"");
-            builder.append(' ');
-            selectDeep = builder.toString();
-        }
-        return selectDeep;
-    }
-    
-    protected Coupon loadCurrentDeep(Cursor cursor, boolean lock) {
-        Coupon entity = loadCurrent(cursor, 0, lock);
-        int offset = getAllColumns().length;
-
-        Product product = loadCurrentOther(daoSession.getProductDao(), cursor, offset);
-        entity.setProduct(product);
-
-        return entity;    
-    }
-
-    public Coupon loadDeep(Long key) {
-        assertSinglePk();
-        if (key == null) {
-            return null;
-        }
-
-        StringBuilder builder = new StringBuilder(getSelectDeep());
-        builder.append("WHERE ");
-        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
-        String sql = builder.toString();
-        
-        String[] keyArray = new String[] { key.toString() };
-        Cursor cursor = db.rawQuery(sql, keyArray);
-        
-        try {
-            boolean available = cursor.moveToFirst();
-            if (!available) {
-                return null;
-            } else if (!cursor.isLast()) {
-                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
-            }
-            return loadCurrentDeep(cursor, true);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
-    public List<Coupon> loadAllDeepFromCursor(Cursor cursor) {
-        int count = cursor.getCount();
-        List<Coupon> list = new ArrayList<Coupon>(count);
-        
-        if (cursor.moveToFirst()) {
-            if (identityScope != null) {
-                identityScope.lock();
-                identityScope.reserveRoom(count);
-            }
-            try {
-                do {
-                    list.add(loadCurrentDeep(cursor, false));
-                } while (cursor.moveToNext());
-            } finally {
-                if (identityScope != null) {
-                    identityScope.unlock();
-                }
-            }
-        }
-        return list;
-    }
-    
-    protected List<Coupon> loadDeepAllAndCloseCursor(Cursor cursor) {
-        try {
-            return loadAllDeepFromCursor(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-
-    /** A raw-style query where you can pass any WHERE clause and arguments. */
-    public List<Coupon> queryDeep(String where, String... selectionArg) {
-        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
-        return loadDeepAllAndCloseCursor(cursor);
-    }
- 
 }

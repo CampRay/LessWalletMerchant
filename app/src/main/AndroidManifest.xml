@@ -60,7 +60,6 @@
         <activity android:name=".ui.CouponUseActivity" />
         <activity android:name=".ui.CouponSendActivity" />
         <activity android:name=".ui.CardSendActivity" />
-        <activity android:name=".ui.CardActivity" />
         <activity android:name=".ui.ProductDetailActivity" />
         <activity android:name=".ui.CardUseActivity" />
         <activity android:name=".ui.ScanCardActivity" />

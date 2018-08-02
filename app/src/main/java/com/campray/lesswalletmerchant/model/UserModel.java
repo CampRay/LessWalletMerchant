@@ -190,7 +190,7 @@ public class UserModel extends BaseModel {
         JsonObject jObj=new JsonObject();
         jObj.addProperty("device",this.getDeviceId());
         jObj.addProperty("id",id);
-        this.httpPostAPI(UserModel.URL_API_GET_USER_BYID, jObj,new ApiHandleListener<JsonObject>() {
+        this.httpPostAPI(UserModel.URL_API_GET_MERCHANT_USER, jObj,new ApiHandleListener<JsonObject>() {
             @Override
             public void done(JsonObject obj, AppException exception) {
                 if (exception == null) {
@@ -255,6 +255,42 @@ public class UserModel extends BaseModel {
     }
 
     /**
+     * 修改用户帐户余额
+     *  @param uid
+     *  @param amount
+     *  @param msg
+     * @param listener
+     */
+    public void updateUserCash(final long uid,final int amount,final String msg, final OperationListener<User> listener) {
+        //封装登录请求参数
+        JsonObject jObj=new JsonObject();
+        jObj.addProperty("device",this.getDeviceId());
+        jObj.addProperty("uid",uid);
+        jObj.addProperty("value",amount+"");
+        jObj.addProperty("msg",msg);
+        this.httpPostAPI(UserModel.URL_API_MODIFY_CASH, jObj,new ApiHandleListener<JsonObject>() {
+            @Override
+            public void done(JsonObject obj, AppException exception) {
+                if (exception == null) {
+                    try {
+                        //如果返回结果没有异常
+                        if (obj.get("Errors").isJsonNull()) {
+                            listener.done(null, null);
+                        } else {
+                            listener.done(null, new AppException(obj.get("Errors").getAsString()));
+                        }
+                    }
+                    catch (Exception e){
+                        listener.done(null, new AppException("E_1004"));
+                    }
+                } else {
+                    listener.done(null, exception);
+                }
+            }
+        });
+    }
+
+    /**
      * 退出登录
      */
     public void logout() {
@@ -268,6 +304,14 @@ public class UserModel extends BaseModel {
         catch (Exception e){ }
         return null;
     }
+
+    public void updateUser(User user) {
+        try {
+            UserDaoService.getInstance(getContext()).insertOrUpdateUser(user);
+        }
+        catch (Exception e){ }
+    }
+
 
     /**
      * 从服务端查找Paypal Braintree支付的Client Token

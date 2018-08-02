@@ -37,6 +37,8 @@ public class CardUseActivity extends MenuActivity {
     TextView tv_title;
     @BindView(R.id.tv_price)
     TextView tv_price;
+    @BindView(R.id.tv_level)
+    TextView tv_level;
     @BindView(R.id.tv_validity)
     TextView tv_validity;
     @BindView(R.id.tv_shortdesc)
@@ -53,20 +55,13 @@ public class CardUseActivity extends MenuActivity {
     LinearLayout ll_benefit;
 
 
-    private String cash="";
-    private String service="";
-    private String buy="";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_coupon_use);
+        setContentView(R.layout.activity_card_use);
         tv_navi_title.setText("Card Information");
         long productId=this.getIntent().getLongExtra("id",0);
         String expired=this.getIntent().getStringExtra("expired");
-        cash=this.getIntent().getStringExtra("cash");
-        service=this.getIntent().getStringExtra("service");
-        buy=this.getIntent().getStringExtra("buy");
         loadData(productId,expired);
     }
 
@@ -83,37 +78,23 @@ public class CardUseActivity extends MenuActivity {
         Product product= ProductModel.getInstance().getProductById(productId);
         CouponStyle couponStyle=product.getCouponStyle();
         if (couponStyle != null) {
-            if(!TextUtils.isEmpty(couponStyle.getBenefitOne())) {
-                tv_benefit.setText(R.string.coupon_benefit_onetime);
-                tv_benefit_value.setText(couponStyle.getBenefitOne());
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                tv_benefit.setText(R.string.coupon_benefit_precash);
-                if(TextUtils.isEmpty(cash)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+cash);
-                }
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                tv_benefit.setText(R.string.coupon_benefit_preservice);
-                if(TextUtils.isEmpty(service)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidService());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+service);
-                }
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                tv_benefit.setText(R.string.coupon_benefit_buyngetone);
-                if(TextUtils.isEmpty(service)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+buy);
-                }
+            if (!TextUtils.isEmpty(couponStyle.getBenefitFree())) {
+                tv_benefit.setText( R.string.coupon_benefit_free);
+                tv_benefit_value.setText(couponStyle.getBenefitFree());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitCash())) {
+                tv_benefit.setText( R.string.coupon_benefit_precash);
+                tv_benefit_value.setText( couponStyle.getBenefitCash());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitDiscount())) {
+                tv_benefit.setText(R.string.coupon_benefit_discount);
+                tv_benefit_value.setText(couponStyle.getBenefitDiscount());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitCustomized())) {
+                tv_benefit.setText( R.string.coupon_benefit_customized);
+                tv_benefit_value.setText(couponStyle.getBenefitCustomized());
             }
             else{
                 ll_benefit.setVisibility(View.GONE);
             }
+            tv_level.setText(couponStyle.getCardLevel()+"");
 
             if (couponStyle.getValidityDay() > 0) {
                 tv_validity.setText(couponStyle.getValidityDay() + getResources().getString(R.string.coupon_validity_day));

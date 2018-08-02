@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -135,8 +136,9 @@ public class CardSendActivity extends MenuActivity {
         if(product!=null) {
             CouponStyle couponStyle = product.getCouponStyle();
             if (couponStyle != null) {
-                //tv_price.setText(coupon.getCouponStyle().getBenefit());
-                rl_card_top.setBackgroundColor(Color.parseColor(product.getCouponStyle().getBgColor()));
+                //设置背景色
+                GradientDrawable gd=(GradientDrawable)rl_card_top.getBackground();
+                gd.setColor(Color.parseColor(couponStyle.getBgColor()));
                 if (!TextUtils.isEmpty(couponStyle.getShadingUrl())) {
                     Picasso.with(this).load(couponStyle.getShadingUrl()).memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE).into(iv_card_shading);
                 } else {

@@ -65,11 +65,9 @@ public class ScanUserActivity extends MenuActivity {
     TextView tv_phone;
     @BindView(R.id.tv_expired)
     TextView tv_expired;
+    @BindView(R.id.tv_cash)
+    TextView tv_cash;
 
-    @BindView(R.id.tv_add)
-    TextView tv_add;
-    @BindView(R.id.tv_reduce)
-    TextView tv_reduce;
     @BindView(R.id.et_points)
     EditText et_points;
     @BindView(R.id.btn_confirm)
@@ -85,7 +83,9 @@ public class ScanUserActivity extends MenuActivity {
 
     private Coupon curCoupon=null;
     private int curPoints=0;
+    private float curCash=0f;
     private boolean isAdd=false;
+    private boolean isCase=false;
     private String expired;
 
 
@@ -209,18 +209,17 @@ public class ScanUserActivity extends MenuActivity {
         Bundle bundle=new Bundle();
         bundle.putLong("id",curCoupon.getOrderId());
         bundle.putString("expired",expired);
-        bundle.putString("number","no."+curCoupon.getProduct().getNumPrefix()+curCoupon.getCid());
-        bundle.putInt("points",curPoints);
         startActivity(CardUseActivity.class,bundle,false);
     }
 
     /**
      * 点击添加积分按钮
      */
-    @OnClick(R.id.tv_add)
-    public void onClickButtonAdd(){
+    @OnClick(R.id.tv_add_point)
+    public void onClickAddPoint(){
         isAdd=true;
         et_points.setText("");
+        et_points.setHint(R.string.text_point_amount_add);
         btn_confirm.setText(R.string.card_point_add);
         rl_dialog.setVisibility(View.VISIBLE);
     }
@@ -228,11 +227,38 @@ public class ScanUserActivity extends MenuActivity {
     /**
      * 点击扣减积分按钮
      */
-    @OnClick(R.id.tv_reduce)
-    public void onClickButtonDeduct(){
+    @OnClick(R.id.tv_reduce_point)
+    public void onClickDeductPoint(){
         isAdd=false;
         et_points.setText("");
+        et_points.setHint(R.string.text_point_amount_deduct);
         btn_confirm.setText(R.string.card_point_deduct);
+        rl_dialog.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 点击充值金额按钮
+     */
+    @OnClick(R.id.tv_add_cash)
+    public void onClickAddCash(){
+        isAdd=true;
+        isCase=true;
+        et_points.setText("");
+        et_points.setHint(R.string.text_cash_amount_add);
+        btn_confirm.setText(R.string.card_cash_add);
+        rl_dialog.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 点击扣减余额按钮
+     */
+    @OnClick(R.id.tv_reduce_cash)
+    public void onClickDeductCash(){
+        isAdd=false;
+        isCase=true;
+        et_points.setText("");
+        et_points.setHint(R.string.text_cash_amount_deduct);
+        btn_confirm.setText(R.string.card_cash_deduct);
         rl_dialog.setVisibility(View.VISIBLE);
     }
 
@@ -240,30 +266,58 @@ public class ScanUserActivity extends MenuActivity {
     public void onClickButtonOk(){
         //修改用户积分
         if(!TextUtils.isEmpty(et_points.getText().toString())) {
-            int points=Integer.parseInt(et_points.getText().toString());
-            if(points>0) {
-                final int pointsVal=isAdd?points:-points;
-                UserModel.getInstance().updateUserPoints(curCoupon.getUserId(),pointsVal,"", new OperationListener<User>() {
-                    @Override
-                    public void done(User user, AppException exception) {
-                        if (exception == null) {
-                            tv_points.setText(curPoints+pointsVal);
-                            rl_dialog.setVisibility(View.GONE);
-                            btn_confirm.setText(R.string.button_ok);
-                            if(isAdd) {
-                                toast("赠送积分成功!");
+            int amount =0;
+            try {
+                amount = Integer.parseInt(et_points.getText().toString());
+            }
+            catch (Exception e){
+                toast("请输入大于0的整数!");
+                return;
+            }
+            if(amount>0) {
+                final int amountVal=isAdd?amount:-amount;
+                if(isCase){
+                    UserModel.getInstance().updateUserCash(curCoupon.getUserId(), amountVal, "", new OperationListener<User>() {
+                        @Override
+                        public void done(User user, AppException exception) {
+                            if (exception == null) {
+                                curCash +=amountVal;
+                                tv_cash.setText(curCash + "");
+                                rl_dialog.setVisibility(View.GONE);
+                                if (isAdd) {
+                                    toast("赠送金额成功!");
+                                } else {
+                                    toast("扣减金额成功!");
+                                }
+                            } else {
+                                toast("修改金额操作失败，错误原因: " + getResources().getString(ResourcesUtils.getStringId(getApplicationContext(), exception.getErrorCode())));
                             }
-                            else{
-                                toast("扣减积分成功!");
-                            }
-                        } else {
-                            toast("修改积分操作失败，错误原因: " + getResources().getString(ResourcesUtils.getStringId(getApplicationContext(), exception.getErrorCode())));
                         }
-                    }
-                });
+                    });
+                }
+                else {
+                    UserModel.getInstance().updateUserPoints(curCoupon.getUserId(), amountVal, "", new OperationListener<User>() {
+                        @Override
+                        public void done(User user, AppException exception) {
+                            if (exception == null) {
+                                curPoints = curPoints + amountVal;
+                                tv_points.setText(curPoints + "");
+                                rl_dialog.setVisibility(View.GONE);
+                                if (isAdd) {
+                                    toast("赠送积分成功!");
+                                } else {
+                                    toast("扣减积分成功!");
+                                }
+                            } else {
+                                toast("修改积分操作失败，错误原因: " + getResources().getString(ResourcesUtils.getStringId(getApplicationContext(), exception.getErrorCode())));
+                            }
+                        }
+                    });
+                }
             }
             else{
-
+                toast("请输入大于0的整数!");
+                return;
             }
         }
     }

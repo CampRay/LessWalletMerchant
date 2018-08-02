@@ -32,20 +32,26 @@
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/coupon_short_desc"
-                android:textColor="#000000" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingBottom="5dp">
 
-            <TextView
-                android:id="@+id/tv_shortdesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:textColor="#424242"
-                android:textSize="12sp" />
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="@string/coupon_level"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/tv_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#454545" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_benefit"
@@ -165,6 +171,21 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/coupon_short_desc"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/tv_shortdesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:textColor="#424242"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/coupon_description"
                 android:textColor="#000000" />
 
@@ -174,9 +195,9 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
                 android:paddingLeft="20dp"
-                tools:text="  Test asdf"
                 android:textColor="#454545"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="  Test asdf" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

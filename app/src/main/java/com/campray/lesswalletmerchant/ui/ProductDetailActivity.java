@@ -72,33 +72,18 @@ public class ProductDetailActivity extends MenuActivity {
         Product product= ProductModel.getInstance().getProductById(productId);
         CouponStyle couponStyle=product.getCouponStyle();
         if (couponStyle != null) {
-            if(!TextUtils.isEmpty(couponStyle.getBenefitOne())) {
-                tv_benefit.setText(R.string.coupon_benefit_onetime);
-                tv_benefit_value.setText(couponStyle.getBenefitOne());
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitPrepaidCash())) {
-                tv_benefit.setText(R.string.coupon_benefit_precash);
-                if(TextUtils.isEmpty(cash)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidCash()+"/"+cash);
-                }
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitPrepaidService())) {
-                tv_benefit.setText(R.string.coupon_benefit_preservice);
-                if(TextUtils.isEmpty(service)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidService());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitPrepaidService()+"/"+service);
-                }
-            }else if(!TextUtils.isEmpty(couponStyle.getBenefitBuyNGetOne())) {
-                tv_benefit.setText(R.string.coupon_benefit_buyngetone);
-                if(TextUtils.isEmpty(service)) {
-                    tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne());
-                }
-                else{
-                    tv_benefit_value.setText(couponStyle.getBenefitBuyNGetOne()+"/"+buy);
-                }
+            if (!TextUtils.isEmpty(couponStyle.getBenefitFree())) {
+                tv_benefit.setText( R.string.coupon_benefit_free);
+                tv_benefit_value.setText(couponStyle.getBenefitFree());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitCash())) {
+                tv_benefit.setText( R.string.coupon_benefit_precash);
+                tv_benefit_value.setText( couponStyle.getBenefitCash());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitDiscount())) {
+                tv_benefit.setText(R.string.coupon_benefit_discount);
+                tv_benefit_value.setText(couponStyle.getBenefitDiscount());
+            } else if (!TextUtils.isEmpty(couponStyle.getBenefitCustomized())) {
+                tv_benefit.setText( R.string.coupon_benefit_customized);
+                tv_benefit_value.setText(couponStyle.getBenefitCustomized());
             }
             else{
                 ll_benefit.setVisibility(View.GONE);

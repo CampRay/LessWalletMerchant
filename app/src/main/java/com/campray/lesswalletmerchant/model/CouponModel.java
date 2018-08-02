@@ -67,7 +67,7 @@ public class CouponModel extends BaseModel {
                                             @Override
                                             public void done(Product obj, AppException exception) {
                                                 if(obj!=null) {
-                                                    coupon.setProduct(product);
+                                                    coupon.setProduct(obj);
                                                     ProductModel.getInstance().insertOrUpdateProduct(obj);
                                                     CouponStyle couponStyle = obj.getCouponStyle();
                                                     if (couponStyle.getValidityYear() > 0 || couponStyle.getValidityMonth() > 0 || couponStyle.getValidityDay() > 0) {
@@ -184,43 +184,6 @@ public class CouponModel extends BaseModel {
             }
         });
     }
-
-    /**
-     * 修改卡卷权益值
-     * @param couponId 卡卷ID
-     * @param key 权益ID
-     * @param value 要修改的值
-     * @param listener
-     */
-    public void changeCouponsBenefit(long couponId,String key,String value, final OperationListener<Coupon> listener) {
-        //封装登录请求参数
-        JsonObject jObj=new JsonObject();
-        jObj.addProperty("device",this.getDeviceId());
-        jObj.addProperty("orderId",couponId);
-        jObj.addProperty("key",key);
-        jObj.addProperty("value",value);
-        this.httpPostAPI(CouponModel.URL_API_MODIFY_BENEFIT, jObj,new ApiHandleListener<JsonObject>() {
-            @Override
-            public void done(JsonObject obj, AppException exception) {
-                if (exception == null) {
-                    try {
-                        //如果返回结果没有异常
-                        if (obj.get("Errors").isJsonNull()) {
-                            listener.done(null, null);
-                        } else {
-                            listener.done(null, new AppException(obj.get("Errors").getAsString()));
-                        }
-                    }
-                    catch (Exception e){
-                        listener.done(null, new AppException("E_1004"));
-                    }
-                } else {
-                    listener.done(null, exception);
-                }
-            }
-        });
-    }
-
 
 
     /**

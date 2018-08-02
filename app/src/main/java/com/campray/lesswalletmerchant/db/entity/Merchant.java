@@ -17,16 +17,19 @@ public class Merchant {
     private String name;
     @NotNull
     private String desc;
+    @NotNull
+    private int storeId;
     //商家Logo
     private String pictureUrl;
     //商家Logo在本地存储路径
     private String picturePath;
-    @Generated(hash = 950038278)
+    @Generated(hash = 1474475832)
     public Merchant(Long id, @NotNull String name, @NotNull String desc,
-            String pictureUrl, String picturePath) {
+            int storeId, String pictureUrl, String picturePath) {
         this.id = id;
         this.name = name;
         this.desc = desc;
+        this.storeId = storeId;
         this.pictureUrl = pictureUrl;
         this.picturePath = picturePath;
     }
@@ -62,6 +65,12 @@ public class Merchant {
     }
     public void setPicturePath(String picturePath) {
         this.picturePath = picturePath;
+    }
+    public int getStoreId() {
+        return this.storeId;
+    }
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 
 

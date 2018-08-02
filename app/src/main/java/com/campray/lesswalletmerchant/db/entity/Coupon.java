@@ -31,7 +31,7 @@ public class Coupon {
     @Id(autoincrement =false )
     private Long orderId;//对应的服务端订单ID
     private Long productId;//对应的商品ID
-    @ToOne(joinProperty="productId")
+    @Transient
     private Product product;
     private String cid; //卡卷編號
     @NotNull
@@ -43,8 +43,6 @@ public class Coupon {
     private String endTime;//过期时间
     @NotNull
     private boolean deleted=false;//是否已使用
-    @Convert(columnType = String.class,converter = BenefitAttrConverter.class)
-    private HashMap<String,String> customValues;//是否已使用
 
     @Transient
     private List<UserAttrValue> userAttrValues; //用户选择或输入的属性的值
@@ -55,15 +53,8 @@ public class Coupon {
     private String endTimeLocal;//过期时间-显示用户时区
     @Transient
     private CouponStyle couponStyle;//Coupon显示样式
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 533881652)
-    private transient CouponDao myDao;
-
-    @Generated(hash = 802601583)
-    public Coupon(Long orderId, Long productId, String cid, long userId, float orderTotal, int paymentStatus, @NotNull String startTime, String endTime, boolean deleted, HashMap<String, String> customValues) {
+    @Generated(hash = 1197839015)
+    public Coupon(Long orderId, Long productId, String cid, long userId, float orderTotal, int paymentStatus, @NotNull String startTime, String endTime, boolean deleted) {
         this.orderId = orderId;
         this.productId = productId;
         this.cid = cid;
@@ -73,15 +64,11 @@ public class Coupon {
         this.startTime = startTime;
         this.endTime = endTime;
         this.deleted = deleted;
-        this.customValues = customValues;
     }
 
     @Generated(hash = 75265961)
     public Coupon() {
     }
-
-    @Generated(hash = 587652864)
-    private transient Long product__resolvedKey;
 
     public String getStartTimeLocal() {
         if (!TextUtils.isEmpty(startTime)) {
@@ -110,19 +97,18 @@ public class Coupon {
             if(couponStyle==null) {
                 couponStyle = new CouponStyle();
                 //循环遍历当前优惠卷的产品规格属性
-                for (SpecAttr specAttr : this.getProduct().getSpecAttr()) {
+                for (SpecAttr specAttr : this.product.getSpecAttr()) {
                     //String selectValue = specAttr.getColorSquaresRgb();//用户通过下接选项选择的值
                     String value = specAttr.getValueRaw();//用户自已输入的值
                     //String value = (TextUtils.isEmpty(selectValue) && TextUtils.isEmpty(customValue)) ? specAttr.getSpecificationAttributeName() : (TextUtils.isEmpty(selectValue) ? customValue : selectValue);
-
                     if (specAttr.getSpecificationAttributeId() == 1) {
-                        couponStyle.setBenefitOne(value);
+                        couponStyle.setBenefitFree(value);
                     } else if (specAttr.getSpecificationAttributeId() == 2) {
-                        couponStyle.setBenefitPrepaidCash(value);
+                        couponStyle.setBenefitCash(value);
                     } else if (specAttr.getSpecificationAttributeId() == 3) {
-                        couponStyle.setBenefitPrepaidService(value);
+                        couponStyle.setBenefitDiscount(value);
                     } else if (specAttr.getSpecificationAttributeId() == 4) {
-                        couponStyle.setBenefitBuyNGetOne(value);
+                        couponStyle.setBenefitCustomized(value);
                     }else if (specAttr.getSpecificationAttributeId() == 5) {//如果是背景色
                         couponStyle.setBgColor(value);
                     } else if (specAttr.getSpecificationAttributeId() == 6) {//如果是底纹
@@ -136,13 +122,18 @@ public class Coupon {
                             couponStyle.setCardLevel(Integer.parseInt(value));
                         }catch (Exception e){}
                     } else if (specAttr.getSpecificationAttributeId() == 10) {//如果是有效期（日）
-                        couponStyle.setValidityDay(Integer.parseInt(value));
+                        try {
+                            couponStyle.setValidityDay(Integer.parseInt(value));
+                        }catch (Exception e){}
                     } else if (specAttr.getSpecificationAttributeId() == 11) {//如果是有效期（月）
-                        couponStyle.setValidityMonth(Integer.parseInt(value));
+                        try {
+                            couponStyle.setValidityMonth(Integer.parseInt(value));
+                        }catch (Exception e){}
                     } else if (specAttr.getSpecificationAttributeId() == 12) {//如果是有效期（年）
-                        couponStyle.setValidityYear(Integer.parseInt(value));
+                        try {
+                            couponStyle.setValidityYear(Integer.parseInt(value));
+                        }catch (Exception e){}
                     } else {
-
                     }
                 }
             }
@@ -226,84 +217,12 @@ public class Coupon {
         this.deleted = deleted;
     }
 
-    public HashMap<String, String> getCustomValues() {
-        return this.customValues;
-    }
-
-    public void setCustomValues(HashMap<String, String> customValues) {
-        this.customValues = customValues;
-    }
-
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1198864293)
     public Product getProduct() {
-        Long __key = this.productId;
-        if (product__resolvedKey == null || !product__resolvedKey.equals(__key)) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            ProductDao targetDao = daoSession.getProductDao();
-            Product productNew = targetDao.load(__key);
-            synchronized (this) {
-                product = productNew;
-                product__resolvedKey = __key;
-            }
-        }
         return product;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 585838205)
     public void setProduct(Product product) {
-        synchronized (this) {
-            this.product = product;
-            productId = product == null ? null : product.getProductId();
-            product__resolvedKey = productId;
-        }
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1044558887)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getCouponDao() : null;
+        this.product = product;
     }
 
     

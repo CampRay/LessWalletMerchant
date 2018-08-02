@@ -122,7 +122,7 @@
                     android:paddingLeft="5dp"
                     android:textColor="@color/colorAccent"
                     android:textSize="12sp"
-                    tools:text="@string/coupon_benefit_buyngetone" />
+                    tools:text="@string/coupon_benefit_free" />
 
                 <TextView
                     android:id="@+id/tv_benefit_value"

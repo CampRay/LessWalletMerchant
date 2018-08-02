@@ -1,5 +1,7 @@
 package com.campray.lesswalletmerchant.db.entity;
 
+import android.text.TextUtils;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
@@ -14,6 +16,7 @@ import com.campray.lesswalletmerchant.db.dao.LanguageDao;
 import com.campray.lesswalletmerchant.db.dao.CountryDao;
 import com.campray.lesswalletmerchant.db.dao.UserDao;
 import com.campray.lesswalletmerchant.db.dao.CurrencyDao;
+import com.campray.lesswalletmerchant.model.CurrencyModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,10 +61,20 @@ public class User {
     private String avatorPath;
 
     private int points=0;//剩余积分
+    private int cash=0;//剩余现金
     private long venderId;//对应的商户ID
+
+    public String getCashStr(){
+        Currency currency= CurrencyModel.getInstance().getDefaultCurrency();
+        String fmtStr="%s";
+        if(!TextUtils.isEmpty(currency.getCustomFormatting())){
+            fmtStr=currency.getCustomFormatting().replace("0.00","%.2f");
+        }
+        return String.format(fmtStr,cash);
+    }
+
     @Transient
     private String fullName;
-
     public String getFullName() {
         //全是字母的正则表达式
         String regex = "^[A-Za-z]+$";
@@ -76,9 +89,6 @@ public class User {
         }
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -86,11 +96,14 @@ public class User {
     /** Used for active entity operations. */
     @Generated(hash = 1507654846)
     private transient UserDao myDao;
-    @Generated(hash = 1373184656)
-    public User(Long id, String userName, @NotNull String email, @NotNull String password,
-            String mobile, String firstName, String lastName, String birthday, long countryId,
-            String address, String token, Long languageId, Long currencyId, boolean remember,
-            String avatarUrl, String avatorPath, int points, long venderId) {
+
+    @Generated(hash = 61758538)
+    public User(Long id, String userName, @NotNull String email,
+            @NotNull String password, String mobile, String firstName,
+            String lastName, String birthday, long countryId, String address,
+            String token, Long languageId, Long currencyId, boolean remember,
+            String avatarUrl, String avatorPath, int points, int cash,
+            long venderId) {
         this.id = id;
         this.userName = userName;
         this.email = email;
@@ -108,98 +121,174 @@ public class User {
         this.avatarUrl = avatarUrl;
         this.avatorPath = avatorPath;
         this.points = points;
+        this.cash = cash;
         this.venderId = venderId;
     }
 
     @Generated(hash = 586692638)
     public User() {
     }
+
+    @Generated(hash = 1591299782)
+    private transient Long country__resolvedKey;
+    @Generated(hash = 1911749295)
+    private transient Long language__resolvedKey;
+    @Generated(hash = 239476790)
+    private transient Long currenty__resolvedKey;
+
+
     public Long getId() {
         return this.id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getUserName() {
         return this.userName;
     }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
     public String getEmail() {
         return this.email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getMobile() {
         return this.mobile;
     }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
+
     public String getFirstName() {
         return this.firstName;
     }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
     public String getLastName() {
         return this.lastName;
     }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
     public String getBirthday() {
         return this.birthday;
     }
+
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
     public long getCountryId() {
         return this.countryId;
     }
+
     public void setCountryId(long countryId) {
         this.countryId = countryId;
     }
+
     public String getAddress() {
         return this.address;
     }
+
     public void setAddress(String address) {
         this.address = address;
     }
+
     public String getToken() {
         return this.token;
     }
+
     public void setToken(String token) {
         this.token = token;
     }
+
     public Long getLanguageId() {
         return this.languageId;
     }
+
     public void setLanguageId(Long languageId) {
         this.languageId = languageId;
     }
+
+    public Long getCurrencyId() {
+        return this.currencyId;
+    }
+
+    public void setCurrencyId(Long currencyId) {
+        this.currencyId = currencyId;
+    }
+
     public boolean getRemember() {
         return this.remember;
     }
+
     public void setRemember(boolean remember) {
         this.remember = remember;
     }
+
     public String getAvatarUrl() {
         return this.avatarUrl;
     }
+
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
     public String getAvatorPath() {
         return this.avatorPath;
     }
+
     public void setAvatorPath(String avatorPath) {
         this.avatorPath = avatorPath;
     }
-    @Generated(hash = 1591299782)
-    private transient Long country__resolvedKey;
+
+    public int getPoints() {
+        return this.points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getCash() {
+        return this.cash;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
+    public long getVenderId() {
+        return this.venderId;
+    }
+
+    public void setVenderId(long venderId) {
+        this.venderId = venderId;
+    }
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 240571258)
     public Country getCountry() {
@@ -218,6 +307,7 @@ public class User {
         }
         return country;
     }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 617812975)
     public void setCountry(@NotNull Country country) {
@@ -231,10 +321,7 @@ public class User {
             country__resolvedKey = countryId;
         }
     }
-    @Generated(hash = 1911749295)
-    private transient Long language__resolvedKey;
-    @Generated(hash = 239476790)
-    private transient Long currenty__resolvedKey;
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 1246715636)
     public Language getLanguage() {
@@ -253,6 +340,7 @@ public class User {
         }
         return language;
     }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 2141598877)
     public void setLanguage(Language language) {
@@ -262,51 +350,7 @@ public class User {
             language__resolvedKey = languageId;
         }
     }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-    public String getPassword() {
-        return this.password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public Long getCurrencyId() {
-        return this.currencyId;
-    }
-    public void setCurrencyId(Long currencyId) {
-        this.currencyId = currencyId;
-    }
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 1731906640)
     public Currency getCurrenty() {
@@ -325,6 +369,7 @@ public class User {
         }
         return currenty;
     }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 271255894)
     public void setCurrenty(Currency currenty) {
@@ -335,12 +380,40 @@ public class User {
         }
     }
 
-    public int getPoints() {
-        return this.points;
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 1942392019)
+    public void refresh() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.refresh(this);
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 713229351)
+    public void update() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.update(this);
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -350,14 +423,7 @@ public class User {
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
 
-    public long getVenderId() {
-        return this.venderId;
-    }
 
-    public void setVenderId(long venderId) {
-        this.venderId = venderId;
-    }
-
-
+    
 
 }

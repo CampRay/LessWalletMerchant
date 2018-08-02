@@ -116,37 +116,41 @@ public class Product {
         if(couponStyle==null) {
             couponStyle = new CouponStyle();
             //循环遍历当前优惠卷的产品规格属性
-            for (SpecAttr specAttr : this.getSpecAttr()) {
-                String value = specAttr.getValueRaw();//用户自已输入的值
-                if (specAttr.getSpecificationAttributeId() == 1) {
-                    couponStyle.setBenefitOne(value);
-                } else if (specAttr.getSpecificationAttributeId() == 2) {
-                    couponStyle.setBenefitPrepaidCash(value);
-                } else if (specAttr.getSpecificationAttributeId() == 3) {
-                    couponStyle.setBenefitPrepaidService(value);
-                } else if (specAttr.getSpecificationAttributeId() == 4) {
-                    couponStyle.setBenefitBuyNGetOne(value);
-                } else if (specAttr.getSpecificationAttributeId() == 5) {//如果是背景色
+            for (SpecAttr item : this.getSpecAttr()) {
+                String value = item.getValueRaw();//用户自已输入的值
+                if (item.getSpecificationAttributeId() == 1) {
+                    couponStyle.setBenefitFree(value);
+                } else if (item.getSpecificationAttributeId() == 2) {
+                    couponStyle.setBenefitCash(value);
+                } else if (item.getSpecificationAttributeId() == 3) {
+                    couponStyle.setBenefitDiscount(value);
+                } else if (item.getSpecificationAttributeId() == 4) {
+                    couponStyle.setBenefitCustomized(value);
+                }else if (item.getSpecificationAttributeId() == 5) {//如果是背景色
                     couponStyle.setBgColor(value);
-                } else if (specAttr.getSpecificationAttributeId() == 6) {//如果是底纹
-                    couponStyle.setShadingUrl(TextUtils.isEmpty(specAttr.getFileUrl()) ? value : specAttr.getFileUrl());
-                } else if (specAttr.getSpecificationAttributeId() == 7) {//如果是自定义图片
-                    couponStyle.setPictureUrl(TextUtils.isEmpty(specAttr.getFileUrl()) ? value : specAttr.getFileUrl());
-                } else if (specAttr.getSpecificationAttributeId() == 8) {//如果是商用家logo
-                    couponStyle.setLogoUrl(TextUtils.isEmpty(specAttr.getFileUrl()) ? value : specAttr.getFileUrl());
-                } else if (specAttr.getSpecificationAttributeId() == 9) {//如果是商用会员卡级别
+                } else if (item.getSpecificationAttributeId() == 6) {//如果是底纹
+                    couponStyle.setShadingUrl(TextUtils.isEmpty(item.getFileUrl()) ? value : item.getFileUrl());
+                } else if (item.getSpecificationAttributeId() == 7) {//如果是自定义图片
+                    couponStyle.setPictureUrl(TextUtils.isEmpty(item.getFileUrl()) ? value : item.getFileUrl());
+                } else if (item.getSpecificationAttributeId() == 8) {//如果是商用家logo
+                    couponStyle.setLogoUrl(TextUtils.isEmpty(item.getFileUrl()) ? value : item.getFileUrl());
+                } else if (item.getSpecificationAttributeId() == 9) {//如果是商用会员卡级别
                     try {
                         couponStyle.setCardLevel(Integer.parseInt(value));
-                    } catch (Exception e) {
-                    }
-                } else if (specAttr.getSpecificationAttributeId() == 10) {//如果是有效期（日）
-                    couponStyle.setValidityDay(Integer.parseInt(value));
-                } else if (specAttr.getSpecificationAttributeId() == 11) {//如果是有效期（月）
-                    couponStyle.setValidityMonth(Integer.parseInt(value));
-                } else if (specAttr.getSpecificationAttributeId() == 12) {//如果是有效期（年）
-                    couponStyle.setValidityYear(Integer.parseInt(value));
+                    }catch (Exception e){}
+                } else if (item.getSpecificationAttributeId() == 10) {//如果是有效期（日）
+                    try {
+                        couponStyle.setValidityDay(Integer.parseInt(value));
+                    }catch (Exception e){}
+                } else if (item.getSpecificationAttributeId() == 11) {//如果是有效期（月）
+                    try {
+                        couponStyle.setValidityMonth(Integer.parseInt(value));
+                    }catch (Exception e){}
+                } else if (item.getSpecificationAttributeId() == 12) {//如果是有效期（年）
+                    try {
+                        couponStyle.setValidityYear(Integer.parseInt(value));
+                    }catch (Exception e){}
                 } else {
-
                 }
             }
         }

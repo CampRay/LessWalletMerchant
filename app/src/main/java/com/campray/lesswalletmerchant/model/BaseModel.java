@@ -25,6 +25,7 @@ import static com.campray.lesswalletmerchant.LessWalletApplication.INSTANCE;
 public abstract class BaseModel {
     public String deviceId=null;
     public static final String HOST="http://192.168.2.3:15536";
+//    public static final String HOST="http://47.106.94.90:8888";
     public static final String URL_API_LOGIN=HOST+"/Plugins/API/Login";
     public static final String URL_API_REGISTER=HOST+"/Plugins/API/Register";
     public static final String URL_API_GETPRODUCT=HOST+"/Plugins/API/GetProduct";
@@ -56,8 +57,9 @@ public abstract class BaseModel {
     public static final String URL_API_GETALL_MERCHANT_PRODUCTS=HOST+"/Plugins/API/GetAllMerchantProducts";
     public static final String URL_API_GETALL_MERCHANT_PRODUCTIDS=HOST+"/Plugins/API/GetAllMerchantProductIds";
     public static final String URL_API_MODIFY_POINTS=HOST+"/Plugins/API/ModifyPoints";
-    public static final String URL_API_MODIFY_BENEFIT=HOST+"/Plugins/API/ModifyBenefit";
+    public static final String URL_API_MODIFY_CASH=HOST+"/Plugins/API/ModifyCash";
     public static final String URL_API_SENT_PRODUCT=HOST+"/Plugins/API/SendProductToUser";
+    public static final String URL_API_GET_MERCHANT_USER=HOST+"/Plugins/API/GeMerchantUser";
 
     private Handler apiHandler;
     public Context getContext(){
